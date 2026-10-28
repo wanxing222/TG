@@ -500,7 +500,8 @@
         
         <div class="tabs" id="mainTabs2">
             <div class="tab active" data-tab="stars">Telegram星星</div>
-            <div class="tab" data-tab="vip">Telegram会员</div>
+           
+<div class="tab" data-tab="vip">Telegram会员</div>
             <div class="tab-indicator" id="tabIndicator2" style="left: 0; width: 50%;"></div>
         </div>
         
@@ -612,9 +613,8 @@
                 ⚠️ 注意事项：<br>
                 1. 汇率：1 USD = 7.0 CNY，最终以支付宝实际结算为准<br>
                 2. 点击上方按钮，在打开的支付宝页面完成付款<br>
-                3. 付款后通常 5-30 分钟内自动开通服务<br>
-                4. 如遇问题，请联系客服提供订单信息核实<br>
-                5. 客服：@wxch03
+                3. 付款后点击下方「我已完成付款」按钮<br>
+                4. 如遇问题，请联系客服 @wxch03
             </div>
         </div>
 
@@ -630,9 +630,8 @@
                 ⚠️ 注意事项：<br>
                 1. 请务必使用 <strong>TRC20 网络</strong>转账，选错网络资产可能丢失！<br>
                 2. 请精确支付显示的金额，不要多转或少转<br>
-                3. 转账后通常 5-30 分钟内自动到账并开通<br>
-                4. 超时未到账请联系客服核实<br>
-                5. 客服：@wxch03
+                3. 转账完成后，点击下方「我已完成付款」按钮<br>
+                4. 超时未到账请联系客服 @wxch03
             </div>
         </div>
 
@@ -764,10 +763,7 @@ function copyAddress() {
 }
 
 function confirmPaid() {
-    const cnyAmount = (selectedItem.price * EXCHANGE_RATE).toFixed(2);
-    const tip = currentPayMethod === 'alipay'
-        ? `✅ 感谢您的付款！\n\n支付金额：¥${cnyAmount}\n通常5-30分钟内自动开通服务。如超时未到账，请联系客服@wxch03，提供接收用户名和支付截图核实。`
-        : `✅ 感谢您的转账！\n\n支付金额：${selectedItem.price.toFixed(2)} USDT\n通常5-30分钟内自动到账并开通。如超时未到账，请联系客服@wxch03，提供接收用户名和交易哈希核实。`;
+    const tip = '✅ 提交成功！后台正在核对支付信息，核对成功后通常5—30分钟内开通，请留意TG官方通知信息。如超时未到账，请联系客服 @wxch03，提供接收用户名和支付截图。';
     alert(tip);
     closePayModal();
 }
