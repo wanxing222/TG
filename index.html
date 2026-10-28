@@ -421,6 +421,7 @@
     <h1 class="page-title">Telegram会员</h1>
 </div>
 
+<!-- Telegram会员页面 -->
 <div id="page-vip" class="page active">
     <div class="fragment-header">
         <div class="fragment-logo">
@@ -444,44 +445,44 @@
         
         <div class="options-header">
             <span class="options-title">选择开通时长</span>
-            <span class="badge-best">最佳优惠</span>
+            <span class="badge-best">超值套餐</span>
         </div>
         
         <div class="options-list" id="vipOptions">
-            <div class="option-card selected" data-id="vip-3m" data-name="Telegram会员 3个月" data-price="10.00">
+            <div class="option-card selected" data-id="vip-1" data-name="Telegram会员 3个月" data-price="15.00">
                 <div class="radio-circle"><div class="radio-dot"></div></div>
                 <div class="option-left">
                     <span class="option-name">3个月</span>
-                    <span class="discount-tag">-20%</span>
+                    <span class="discount-tag">热销</span>
                 </div>
                 <div class="option-right">
                     <span class="icon-coin">💎</span>
-                    <span class="option-price">10.00</span>
-                    <span class="option-original">~ $10.00</span>
+                    <span class="option-price">15.00</span>
+                    <span class="option-original">~ $15.00</span>
                 </div>
             </div>
-            <div class="option-card" data-id="vip-6m" data-name="Telegram会员 6个月" data-price="16.00">
+            <div class="option-card" data-id="vip-2" data-name="Telegram会员 6个月" data-price="20.00">
                 <div class="radio-circle"><div class="radio-dot"></div></div>
                 <div class="option-left">
                     <span class="option-name">6个月</span>
-                    <span class="discount-tag">-47%</span>
+                    <span class="discount-tag">推荐</span>
                 </div>
                 <div class="option-right">
                     <span class="icon-coin">💎</span>
-                    <span class="option-price">16.00</span>
-                    <span class="option-original">~ $16.00</span>
+                    <span class="option-price">20.00</span>
+                    <span class="option-original">~ $20.00</span>
                 </div>
             </div>
-            <div class="option-card" data-id="vip-12m" data-name="Telegram会员 12个月" data-price="30.00">
+            <div class="option-card" data-id="vip-3" data-name="Telegram会员 12个月" data-price="35.00">
                 <div class="radio-circle"><div class="radio-dot"></div></div>
                 <div class="option-left">
                     <span class="option-name">12个月</span>
-                    <span class="discount-tag">-52%</span>
+                    <span class="discount-tag">超值</span>
                 </div>
                 <div class="option-right">
                     <span class="icon-coin">💎</span>
-                    <span class="option-price">30.00</span>
-                    <span class="option-original">~ $30.00</span>
+                    <span class="option-price">35.00</span>
+                    <span class="option-original">~ $35.00</span>
                 </div>
             </div>
         </div>
@@ -490,6 +491,7 @@
     </div>
 </div>
 
+<!-- Telegram星星页面 -->
 <div id="page-stars" class="page">
     <div class="fragment-header">
         <div class="fragment-logo">
@@ -498,7 +500,7 @@
         
         <div class="tabs" id="mainTabs2">
             <div class="tab active" data-tab="stars">Telegram星星</div>
-                        <div class="tab" data-tab="vip">Telegram会员</div>
+            <div class="tab" data-tab="vip">Telegram会员</div>
             <div class="tab-indicator" id="tabIndicator2" style="left: 0; width: 50%;"></div>
         </div>
         
@@ -591,7 +593,7 @@
         </div>
 
         <div class="pay-method-box">
-            <div class="pay-method-item active.alipay" data-method="alipay" onclick="switchPayMethod('alipay')">
+            <div class="pay-method-item active alipay" data-method="alipay" onclick="switchPayMethod('alipay')">
                 💰 支付宝
             </div>
             <div class="pay-method-item usdt" data-method="usdt" onclick="switchPayMethod('usdt')">
@@ -641,13 +643,13 @@
 <script>
 // 配置
 const USDT_ADDRESS = 'TV2TuxxvGgzD2tQ8C6VDpqa7yMvn8AAmcK';
-const EXCHANGE_RATE = 7.0; // 美元兑人民币汇率
+const EXCHANGE_RATE = 7.0;
 let currentTab = 'vip';
 let selectedItem = null;
 let receiverUsername = '';
 let currentPayMethod = 'alipay';
 
-// ========== 标签切换逻辑 ==========
+// 标签切换
 function setupTabs(tabsId, indicatorId) {
     const tabs = document.querySelectorAll(`#${tabsId} .tab`);
     const indicator = document.getElementById(indicatorId);
@@ -680,7 +682,7 @@ function setupTabs(tabsId, indicatorId) {
 setupTabs('mainTabs', 'tabIndicator');
 setupTabs('mainTabs2', 'tabIndicator2');
 
-// ========== 选项选择逻辑 ==========
+// 选项选择
 function setupOptionCards(containerId) {
     const cards = document.querySelectorAll(`#${containerId} .option-card`);
     cards.forEach(card => {
@@ -698,11 +700,11 @@ function setupOptionCards(containerId) {
 setupOptionCards('vipOptions');
 setupOptionCards('starsOptions');
 
-// ========== 支付相关 ==========
+// 支付逻辑
 function goToPay() {
     if(currentTab === 'vip') {
         receiverUsername = document.getElementById('vipUsername').value.trim();
-        if(!selectedItem) selectedItem = { id: 'vip-3m', name: 'Telegram会员 3个月', price: 10.00 };
+        if(!selectedItem) selectedItem = { id: 'vip-1', name: 'Telegram会员 3个月', price: 15.00 };
     } else {
         receiverUsername = document.getElementById('starsUsername').value.trim();
         if(!selectedItem) selectedItem = { id: 'stars-500', name: '500 Stars', price: 10.00 };
@@ -735,9 +737,7 @@ function switchPayMethod(method) {
     currentPayMethod = method;
     document.querySelectorAll('.pay-method-item').forEach(el => {
         el.classList.remove('active', 'alipay', 'usdt');
-        if(el.dataset.method === method) {
-            el.classList.add('active', method);
-        }
+        if(el.dataset.method === method) el.classList.add('active', method);
     });
     if(method === 'alipay') {
         document.getElementById('alipayContent').classList.remove('hidden');
