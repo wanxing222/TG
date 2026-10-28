@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Telegram会员 & Telegram星星</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        :root {
+            --bg-dark: #1E2936;
+            --bg-card: #273647;
+            --bg-input: #2A3B4C;
+            --text-primary: #FFFFFF;
+            --text-secondary: #A4B0C0;
+            --accent-blue: #2AABEE;
+            --accent-green: #34C759;
+            --accent-yellow: #FFCC00;
+            --discount-blue: #007AFF;
+            --border-selected: #2AABEE;
+            --border-normal: #3A4C60;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+        .page.active {
+            display: block;
+        }
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 14px 16px;
+            background-color: #0F1A24;
+        }
+        .back-btn {
+            position: absolute;
+            left: 16px;
+            font-size: 22px;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .fragment-header {
+            background-color: var(--bg-dark);
+            padding: 24px 16px 8px;
+        }
+        .fragment-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 24px;
+        }
+        .logo-icon {
+            font-size: 28px;
+        }
+
+        .tabs {
+            display: flex;
+            position: relative;
+            margin-bottom: 32px;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 17px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .tab.active {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        .tab-indicator {
+            position: absolute;
+            bottom: 0;
+            height: 3px;
+            background-color: var(--accent-blue);
+            border-radius: 3px 3px 0 0;
+            transition: left 0.3s ease, width 0.3s ease;
+        }
+
+        .section-title-main {
+            font-size: 30px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .section-subtitle {
+            font-size: 15px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 32px;
+            line-height: 1.5;
+        }
+
+        .input-label {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 32px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            font-size: 18px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 14px 14px 14px 44px;
+            font-size: 16px;
+            background-color: var(--bg-input);
+            border: none;
+            border-radius: 10px;
+            color: var(--text-primary);
+            outline: none;
+        }
+        .input-field::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .options-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .options-title {
+            font-size: 19px;
+            font-weight: 600;
+        }
+        .badge-best {
+            background-color: rgba(52, 199, 89, 0.15);
+            color: var(--accent-green);
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 32px;
+        }
+        .option-card {
+            background-color: var(--bg-card);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-card.selected {
+            border-color: var(--border-selected);
+            background-color: rgba(42, 171, 238, 0.08);
+        }
+        .radio-circle {
+            width: 22px;
+            height: 22px;
+            border: 2px solid var(--border-normal);
+            border-radius: 50%;
+            margin-right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+        .option-card.selected .radio-circle {
+            border-color: var(--border-selected);
+        }
+        .radio-dot {
+            width: 10px;
+            height: 10px;
+            background-color: var(--border-selected);
+            border-radius: 50%;
+            transform: scale(0);
+            transition: transform 0.2s;
+        }
+        .option-card.selected .radio-dot {
+            transform: scale(1);
+        }
+        .option-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .option-name {
+            font-size: 17px;
+            font-weight: 500;
+        }
+        .discount-tag {
+            background-color: var(--discount-blue);
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: 6px;
+        }
+        .option-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .icon-coin {
+            color: var(--accent-yellow);
+            font-size: 18px;
+        }
+        .option-price {
+            font-size: 17px;
+            font-weight: 600;
+        }
+        .option-original {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .main-btn {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .main-btn:active {
+            opacity: 0.8;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 100;
+        }
+        .modal-overlay.show {
+            display: flex;
+        }
+        .modal-box {
+            background-color: var(--bg-card);
+            width: 100%;
+            max-width: 480px;
+            border-radius: 16px 16px 0 0;
+            padding: 24px 20px 40px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .close-btn {
+            float: right;
+            font-size: 26px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            margin-top: -8px;
+        }
+
+        .pay-method-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+        .pay-method-item {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            border: 2px solid var(--border-normal);
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pay-method-item.active.alipay {
+            border-color: #1677FF;
+            background: rgba(22, 119, 255, 0.1);
+            color: #69B1FF;
+        }
+        .pay-method-item.active.usdt {
+            border-color: #27AE60;
+            background: rgba(39, 174, 96, 0.1);
+            color: #6FD792;
+        }
+
+        .order-info-box {
+            background-color: var(--bg-input);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 15px;
+        }
+        .order-row.total {
+            border-top: 1px solid var(--border-normal);
+            margin-top: 8px;
+            padding-top: 12px;
+            font-weight: 700;
+            font-size: 17px;
+        }
+        .pay-amount-large {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+        .cny-amount {
+            font-size: 15px;
+            color: #69B1FF;
+            margin-left: 8px;
+            font-weight: 500;
+        }
+
+        .alipay-link-box {
+            text-align: center;
+            margin: 24px 0;
+        }
+        .alipay-btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background-color: #1677FF;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .pay-address-box {
+            background-color: rgba(39, 174, 96, 0.1);
+            border: 1px solid #27AE60;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 20px 0;
+            word-break: break-all;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+        .copy-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #27AE60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .pay-tip {
+            background-color: rgba(255, 204, 0, 0.1);
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 13px;
+            color: #E0A800;
+            line-height: 1.8;
+            margin-top: 16px;
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div class="top-nav">
+    <a class="back-btn" href="javascript:history.back()">‹</a>
+    <h1 class="page-title">Telegram会员</h1>
+</div>
+
+<div id="page-vip" class="page active">
+    <div class="fragment-header">
+        <div class="fragment-logo">
+            <span class="logo-icon">▼</span> FRAGMENT
+        </div>
+        
+        <div class="tabs" id="mainTabs">
+            <div class="tab" data-tab="stars">Telegram星星</div>
+            <div class="tab active" data-tab="vip">Telegram会员</div>
+            <div class="tab-indicator" id="tabIndicator" style="left: 50%; width: 50%;"></div>
+        </div>
+        
+        <h2 class="section-title-main">购买Telegram会员 ★</h2>
+        <p class="section-subtitle">使用你的加密钱包购买Telegram会员，为自己或你的朋友开通。</p>
+        
+        <label class="input-label">输入要开通的Telegram用户名</label>
+        <div class="input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="vipUsername" class="input-field" placeholder="输入Telegram用户名，例如：@username">
+        </div>
+        
+        <div class="options-header">
+            <span class="options-title">选择开通时长</span>
+            <span class="badge-best">最佳优惠</span>
+        </div>
+        
+        <div class="options-list" id="vipOptions">
+            <div class="option-card selected" data-id="vip-3m" data-name="Telegram会员 3个月" data-price="10.00">
+                <div class="radio-circle"><div class="radio-dot"></div></div>
+                <div class="option-left">
+                    <span class="option-name">3个月</span>
+                    <span class="discount-tag">-20%</span>
+                </div>
+                <div class="option-right">
+                    <span class="icon-coin">💎</span>
+                    <span class="option-price">10.00</span>
+                    <span class="option-original">~ $10.00</span>
+                </div>
+            </div>
+            <div class="option-card" data-id="vip-6m" data-name="Telegram会员 6个月" data-price="16.00">
+                <div class="radio-circle"><div class="radio-dot"></div></div>
+                <div class="option-left">
+                    <span class="option-name">6个月</span>
+                    <span class="discount-tag">-47%</span>
+                </div>
+                <div class="option-right">
+                    <span class="icon-coin">💎</span>
+                    <span class="option-price">16.00</span>
+                    <span class="option-original">~ $16.00</span>
+                </div>
+            </div>
+            <div class="option-card" data-id="vip-12m" data-name="Telegram会员 12个月" data-price="30.00">
+                <div class="radio-circle"><div class="radio-dot"></div></div>
+                <div class="option-left">
+                    <span class="option-name">12个月</span>
+                    <span class="discount-tag">-52%</span>
+                </div>
+                <div class="option-right">
+                    <span class="icon-coin">💎</span>
+                    <span class="option-price">30.00</span>
+                    <span class="option-original">~ $30.00</span>
+                </div>
+            </div>
+        </div>
+        
+        <button class="main-btn" onclick="goToPay()">立即购买</button>
+    </div>
+</div>
+
+<div id="page-stars" class="page">
+    <div class="fragment-header">
+        <div class="fragment-logo">
+            <span class="logo-icon">▼</span> FRAGMENT
+        </div>
+        
+        <div class="tabs" id="mainTabs2">
+            <div class="tab active" data-tab="stars">Telegram星星</div>
+                        <div class="tab" data-tab="vip">Telegram会员</div>
+            <div class="tab-indicator" id="tabIndicator2" style="left: 0; width: 50%;"></div>
+        </div>
+        
+        <h2 class="section-title-main">购买Telegram星星 ⭐</h2>
+        <p class="section-subtitle">为自己或你的朋友购买Telegram星星。</p>
+        
+        <label class="input-label">输入接收Telegram用户</label>
+        <div class="input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="starsUsername" class="input-field" placeholder="输入Telegram用户名，例如：@username">
+        </div>
+        
+        <div class="options-header">
+            <span class="options-title">选择购买数量</span>
+        </div>
+        
+        <div class="options-list" id="starsOptions">
+            <div class="option-card selected" data-id="stars-500" data-name="500 Stars" data-price="10.00">
+                <div class="radio-circle"><div class="radio-dot"></div></div>
+                <div class="option-left">
+                    <span style="font-size:18px;">⭐⭐⭐⭐</span>
+                    <span class="option-name">500 Stars</span>
+                </div>
+                <div class="option-right">
+                    <span class="icon-coin">💎</span>
+                    <span class="option-price">10.00</span>
+                </div>
+            </div>
+            <div class="option-card" data-id="stars-1000" data-name="1,000 Stars" data-price="20.00">
+                <div class="radio-circle"><div class="radio-dot"></div></div>
+                <div class="option-left">
+                    <span style="font-size:18px;">⭐⭐⭐⭐⭐</span>
+                    <span class="option-name">1000 Stars</span>
+                </div>
+                <div class="option-right">
+                    <span class="icon-coin">💎</span>
+                    <span class="option-price">20.00</span>
+                </div>
+            </div>
+            <div class="option-card" data-id="stars-2000" data-name="2K Stars — 2,000 Stars" data-price="40.00">
+                <div class="radio-circle"><div class="radio-dot"></div></div>
+                <div class="option-left">
+                    <span style="font-size:18px;">✨✨</span>
+                    <span class="option-name">2K Stars</span>
+                </div>
+                <div class="option-right">
+                    <span class="icon-coin">💎</span>
+                    <span class="option-price">40.00</span>
+                </div>
+            </div>
+            <div class="option-card" data-id="stars-5000" data-name="5K Stars — 5,000 Stars" data-price="95.00">
+                <div class="radio-circle"><div class="radio-dot"></div></div>
+                <div class="option-left">
+                    <span style="font-size:18px;">🌟🌟🌟</span>
+                    <span class="option-name">5K Stars</span>
+                </div>
+                <div class="option-right">
+                    <span class="icon-coin">💎</span>
+                    <span class="option-price">95.00</span>
+                </div>
+            </div>
+        </div>
+        
+        <button class="main-btn" onclick="goToPay()">立即购买</button>
+    </div>
+</div>
+
+<!-- 支付弹窗 -->
+<div id="payModal" class="modal-overlay">
+    <div class="modal-box">
+        <span class="close-btn" onclick="closePayModal()">×</span>
+        <h2 class="modal-title">确认订单</h2>
+
+        <div class="order-info-box">
+            <div class="order-row">
+                <span>商品</span>
+                <span id="payItemName"></span>
+            </div>
+            <div class="order-row">
+                <span>接收用户</span>
+                <span id="payReceiver"></span>
+            </div>
+            <div class="order-row total">
+                <span>应付金额</span>
+                <span>
+                    <span class="pay-amount-large">$<span id="payUsdtAmount"></span></span>
+                    <span class="cny-amount">≈ ¥<span id="payCnyAmount"></span></span>
+                </span>
+            </div>
+        </div>
+
+        <div class="pay-method-box">
+            <div class="pay-method-item active.alipay" data-method="alipay" onclick="switchPayMethod('alipay')">
+                💰 支付宝
+            </div>
+            <div class="pay-method-item usdt" data-method="usdt" onclick="switchPayMethod('usdt')">
+                💎 USDT
+            </div>
+        </div>
+
+        <!-- 支付宝支付 -->
+        <div id="alipayContent">
+            <div class="alipay-link-box">
+                <a href="https://qr.alipay.com/fkx16193ubdgzfllkobdo53" target="_blank" class="alipay-btn">
+                    📱 打开支付宝付款 ¥<span id="alipayCnyAmount"></span>
+                </a>
+            </div>
+            <div class="pay-tip">
+                ⚠️ 注意事项：<br>
+                1. 汇率：1 USD = 7.0 CNY，最终以支付宝实际结算为准<br>
+                2. 点击上方按钮，在打开的支付宝页面完成付款<br>
+                3. 付款后通常 5-30 分钟内自动开通服务<br>
+                4. 如遇问题，请联系客服提供订单信息核实<br>
+                5. 客服：@wxch03
+            </div>
+        </div>
+
+        <!-- USDT支付 -->
+        <div id="usdtContent" class="hidden">
+            <div class="pay-address-box">
+                币种：USDT (TRC20 网络)<br>
+                地址：TV2TuxxvGgzD2tQ8C6VDpqa7yMvn8AAmcK<br>
+                金额：<span id="usdtPayAmount">0.00</span> USDT
+            </div>
+            <button class="copy-btn" onclick="copyAddress()">📋 复制地址与金额</button>
+            <div class="pay-tip">
+                ⚠️ 注意事项：<br>
+                1. 请务必使用 <strong>TRC20 网络</strong>转账，选错网络资产可能丢失！<br>
+                2. 请精确支付显示的金额，不要多转或少转<br>
+                3. 转账后通常 5-30 分钟内自动到账并开通<br>
+                4. 超时未到账请联系客服核实<br>
+                5. 客服：@wxch03
+            </div>
+        </div>
+
+        <button class="main-btn" style="margin-top:24px;" onclick="confirmPaid()">我已完成付款</button>
+    </div>
+</div>
+
+<script>
+// 配置
+const USDT_ADDRESS = 'TV2TuxxvGgzD2tQ8C6VDpqa7yMvn8AAmcK';
+const EXCHANGE_RATE = 7.0; // 美元兑人民币汇率
+let currentTab = 'vip';
+let selectedItem = null;
+let receiverUsername = '';
+let currentPayMethod = 'alipay';
+
+// ========== 标签切换逻辑 ==========
+function setupTabs(tabsId, indicatorId) {
+    const tabs = document.querySelectorAll(`#${tabsId} .tab`);
+    const indicator = document.getElementById(indicatorId);
+    
+    tabs.forEach((tab, idx) => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            
+            const tabWidth = 100 / tabs.length;
+            indicator.style.left = `${idx * tabWidth}%`;
+            indicator.style.width = `${tabWidth}%`;
+            
+            const targetPage = tab.dataset.tab;
+            currentTab = targetPage;
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page-${targetPage}`).classList.add('active');
+            
+            selectedItem = null;
+            document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+            document.querySelector(`#page-${targetPage} .option-card`).classList.add('selected');
+            selectedItem = {
+                id: document.querySelector(`#page-${targetPage} .option-card`).dataset.id,
+                name: document.querySelector(`#page-${targetPage} .option-card`).dataset.name,
+                price: parseFloat(document.querySelector(`#page-${targetPage} .option-card`).dataset.price)
+            };
+        });
+    });
+}
+setupTabs('mainTabs', 'tabIndicator');
+setupTabs('mainTabs2', 'tabIndicator2');
+
+// ========== 选项选择逻辑 ==========
+function setupOptionCards(containerId) {
+    const cards = document.querySelectorAll(`#${containerId} .option-card`);
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            cards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedItem = {
+                id: card.dataset.id,
+                name: card.dataset.name,
+                price: parseFloat(card.dataset.price)
+            };
+        });
+    });
+}
+setupOptionCards('vipOptions');
+setupOptionCards('starsOptions');
+
+// ========== 支付相关 ==========
+function goToPay() {
+    if(currentTab === 'vip') {
+        receiverUsername = document.getElementById('vipUsername').value.trim();
+        if(!selectedItem) selectedItem = { id: 'vip-3m', name: 'Telegram会员 3个月', price: 10.00 };
+    } else {
+        receiverUsername = document.getElementById('starsUsername').value.trim();
+        if(!selectedItem) selectedItem = { id: 'stars-500', name: '500 Stars', price: 10.00 };
+    }
+    
+    if(!receiverUsername) {
+        alert('请输入接收的Telegram用户名');
+        return;
+    }
+    
+    const usdtPrice = selectedItem.price;
+    const cnyPrice = (usdtPrice * EXCHANGE_RATE).toFixed(2);
+    
+    document.getElementById('payItemName').textContent = selectedItem.name;
+    document.getElementById('payReceiver').textContent = receiverUsername;
+    document.getElementById('payUsdtAmount').textContent = usdtPrice.toFixed(2);
+    document.getElementById('payCnyAmount').textContent = cnyPrice;
+    document.getElementById('usdtPayAmount').textContent = usdtPrice.toFixed(2);
+    document.getElementById('alipayCnyAmount').textContent = cnyPrice;
+    
+    switchPayMethod('alipay');
+    document.getElementById('payModal').classList.add('show');
+}
+
+function closePayModal() {
+    document.getElementById('payModal').classList.remove('show');
+}
+
+function switchPayMethod(method) {
+    currentPayMethod = method;
+    document.querySelectorAll('.pay-method-item').forEach(el => {
+        el.classList.remove('active', 'alipay', 'usdt');
+        if(el.dataset.method === method) {
+            el.classList.add('active', method);
+        }
+    });
+    if(method === 'alipay') {
+        document.getElementById('alipayContent').classList.remove('hidden');
+        document.getElementById('usdtContent').classList.add('hidden');
+    } else {
+        document.getElementById('alipayContent').classList.add('hidden');
+        document.getElementById('usdtContent').classList.remove('hidden');
+    }
+}
+
+function copyAddress() {
+    const text = `币种：USDT (TRC20 网络)\n地址：${USDT_ADDRESS}\n金额：${selectedItem.price.toFixed(2)} USDT\n商品：${selectedItem.name}\n接收用户：${receiverUsername}`;
+    navigator.clipboard.writeText(text).then(() => {
+        alert('✅ 地址已复制到剪贴板！');
+    }).catch(() => {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('✅ 地址已复制到剪贴板！');
+    });
+}
+
+function confirmPaid() {
+    const cnyAmount = (selectedItem.price * EXCHANGE_RATE).toFixed(2);
+    const tip = currentPayMethod === 'alipay'
+        ? `✅ 感谢您的付款！\n\n支付金额：¥${cnyAmount}\n通常5-30分钟内自动开通服务。如超时未到账，请联系客服@wxch03，提供接收用户名和支付截图核实。`
+        : `✅ 感谢您的转账！\n\n支付金额：${selectedItem.price.toFixed(2)} USDT\n通常5-30分钟内自动到账并开通。如超时未到账，请联系客服@wxch03，提供接收用户名和交易哈希核实。`;
+    alert(tip);
+    closePayModal();
+}
+</script>
+
+</body>
+</html>
